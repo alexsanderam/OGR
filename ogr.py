@@ -10,6 +10,7 @@ from PIL import Image
 from time import time
 
 
+import teste
 
 
 def preprocessing(pixels):
@@ -46,11 +47,11 @@ def segmentation(pixels, k=5):
 	for i in range(0, k):
 		vertices = morphology.binary_dilation(vertices)
 
-	print "Getting edges from complement of vertices pixels"
-	edges = np.subtract(pixels, vertices)
-	edges = edges.clip(0)
+	#print "Getting edges from complement of vertices pixels"
+	#edges = np.subtract(pixels, vertices)
+	#edges = edges.clip(0)
 	
-	return vertices, edges
+	return vertices#, edges
 
 
 def topology_recognition(pixels, vertices):
@@ -58,8 +59,11 @@ def topology_recognition(pixels, vertices):
 
 	print "Skelonization image."
 	skel = morphology.zang_and_suen_binary_thining(pixels)
+	#skel = teste.binary_skeletonization(pixels)
 	print "Edge classification."
 	pm, pe, pp, pc = edge_classification(skel, vertices)
+
+	trivial_sections, port_sections, crossing_sections = edge_sections_identify(pe, pp, pc)
 
 	return skel, pm, pe, pp, pc
 
@@ -77,7 +81,8 @@ def edge_classification(skel, vertices):
 
 			if skel[x,y] == 1 and vertices[x,y] == 0:
 				#four neighborhood of pixel (x, y)
-				#neighborhood = [skel[x-1, y], skel[x+1, y], skel[x, y-1], skel[x, y+1]]
+				#skel_neighborhood = [skel[x-1, y], skel[x+1, y], skel[x, y-1], skel[x, y+1]]
+				#vertex_neighborhood = [vertices[x-1, y], vertices[x+1, y], vertices[x, y-1], vertices[x, y+1]]
 				#eight neighborhood of pixel (x, y)
 				skel_neighborhood = [skel[x-1, y], skel[x+1, y], skel[x, y-1], skel[x, y+1], skel[x+1, y+1], skel[x+1, y-1], skel[x-1, y+1], skel[x-1, y-1]]
 				vertex_neighborhood = [vertices[x-1, y], vertices[x+1, y], vertices[x, y-1], vertices[x, y+1], vertices[x+1, y+1], vertices[x+1, y-1], vertices[x-1, y+1], vertices[x-1, y-1]]
@@ -94,6 +99,16 @@ def edge_classification(skel, vertices):
 					crossing_pixels.append((x,y))
 
 	return miscellaneous_pixels, edge_pixels, port_pixels, crossing_pixels
+
+
+
+def edge_sections_identify(pe, pp, pc):
+	trivial_sections = []
+	port_sections = []
+	crossing_sections = []
+
+	return trivial_sections, port_sections, crossing_sections
+
 
 
 def postprocessing():
@@ -131,7 +146,8 @@ def convert_to_topological_graph(pixels):
 	start_time = time()
 
 	#call segmentation phase
-	vertices, edges = segmentation(pixels)
+	#vertices, edges = segmentation(pixels)
+	vertices = segmentation(pixels)
 
 	#get end time of preprocessing phase
 	end_time = time()
@@ -159,19 +175,19 @@ def convert_to_topological_graph(pixels):
 	print "Time spent in the topology recognition phase: %.4f(s)\n" % (spent_time)
 
 	#Visualization
-	#edge_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	#crossing_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	#port_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	#for x, y in pe:
-	#	edge_pixels[x,y] = 1
-	#for x, y in pc:
-	#	crossing_pixels[x,y] = 1
-	#for x, y in pp:
-	#	port_pixels[x,y] = 1
-	#rgb = util.convert_binary_arrays_to_single_RGB_array(port_pixels, crossing_pixels, edge_pixels)
+	edge_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	crossing_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	port_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	for x, y in pe:
+		edge_pixels[x,y] = 1
+	for x, y in pc:
+		crossing_pixels[x,y] = 1
+	for x, y in pp:
+		port_pixels[x,y] = 1
+	rgb = util.convert_binary_arrays_to_single_RGB_array(port_pixels, crossing_pixels, edge_pixels)
 	
-	u#til.show_image_from_RGB_array(rgb, "Segmented")
-	#util.show_image_from_binary_array(skel, "Skelonization")
+	util.show_image_from_RGB_array(rgb, "Segmented")
+	util.show_image_from_binary_array(skel, "Skelonization")
 	#====================================================================================
 
 

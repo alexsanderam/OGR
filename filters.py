@@ -6,11 +6,11 @@ def power_law(pixels, c, gamma):
 
 	output = np.zeros((height, width))
 
-	'''
-	for x in range(0, height):
-		for y in range(0, width):
-				output[x, y] = np.power(np.dot(c, pixels[x, y]), gamma)
-	'''
+	
+	#for x in range(0, height):
+	#	for y in range(0, width):
+	#			output[x, y] = np.power(np.dot(c, pixels[x, y]), gamma)
+	
 	output = np.power(np.dot(c, pixels), gamma)
 
 	return output.astype(np.uint8)
@@ -102,11 +102,11 @@ def gaussian_1D(pixels, order, sigma):
 			for j in range(0, order):
 				output[x, y] = np.add(output[x, y], np.dot(mask_x[j], pixels[x, y+j-offset]))
 
-	'''
-	for x in range(0, offset - 1):
-		for y in range(0, offset - 1):
-			output[x, y] = pixels[x, y]
-	'''
+	
+	#for x in range(0, offset - 1):
+	#	for y in range(0, offset - 1):
+	#		output[x, y] = pixels[x, y]
+	
 
 	return output.astype(np.uint8)
 
@@ -186,26 +186,26 @@ def sobel(pixels):
 	
 	for x in range(offset, height - offset):
 		for y in range(offset, width - offset):
-			'''
-			grad_x[x, y] += mask_x[0, 0] * pixels[x+0-offset, y+0-offset]
-			grad_y[x, y] += mask_y[0, 1] * pixels[x+0-offset, y+0-offset]
-			grad_x[x, y] += mask_x[0, 2] * pixels[x+0-offset, y+1-offset]
-			grad_y[x, y] += mask_y[0, 0] * pixels[x+0-offset, y+1-offset]	
-			grad_x[x, y] += mask_x[0, 1] * pixels[x+0-offset, y+2-offset]
-			grad_y[x, y] += mask_y[0, 2] * pixels[x+0-offset, y+2-offset]
-			grad_x[x, y] += mask_x[1, 0] * pixels[x+1-offset, y+0-offset]
-			grad_y[x, y] += mask_y[1, 1] * pixels[x+1-offset, y+0-offset]
-			grad_x[x, y] += mask_x[1, 2] * pixels[x+1-offset, y+1-offset]
-			grad_y[x, y] += mask_y[1, 0] * pixels[x+1-offset, y+1-offset]
-			grad_x[x, y] += mask_x[1, 1] * pixels[x+1-offset, y+2-offset]
-			grad_y[x, y] += mask_y[1, 2] * pixels[x+1-offset, y+2-offset]
-			grad_x[x, y] += mask_x[2, 0] * pixels[x+2-offset, y+0-offset]
-			grad_y[x, y] += mask_y[2, 1] * pixels[x+2-offset, y+0-offset]
-			grad_x[x, y] += mask_x[2, 2] * pixels[x+2-offset, y+1-offset]
-			grad_y[x, y] += mask_y[2, 0] * pixels[x+2-offset, y+1-offset]
-			grad_x[x, y] += mask_x[2, 1] * pixels[x+2-offset, y+2-offset]
-			grad_y[x, y] += mask_y[2, 2] * pixels[x+2-offset, y+2-offset]
-			'''
+			
+			#grad_x[x, y] += mask_x[0, 0] * pixels[x+0-offset, y+0-offset]
+			#grad_y[x, y] += mask_y[0, 1] * pixels[x+0-offset, y+0-offset]
+			#grad_x[x, y] += mask_x[0, 2] * pixels[x+0-offset, y+1-offset]
+			#grad_y[x, y] += mask_y[0, 0] * pixels[x+0-offset, y+1-offset]	
+			#grad_x[x, y] += mask_x[0, 1] * pixels[x+0-offset, y+2-offset]
+			#grad_y[x, y] += mask_y[0, 2] * pixels[x+0-offset, y+2-offset]
+			#grad_x[x, y] += mask_x[1, 0] * pixels[x+1-offset, y+0-offset]
+			#grad_y[x, y] += mask_y[1, 1] * pixels[x+1-offset, y+0-offset]
+			#grad_x[x, y] += mask_x[1, 2] * pixels[x+1-offset, y+1-offset]
+			#grad_y[x, y] += mask_y[1, 0] * pixels[x+1-offset, y+1-offset]
+			#grad_x[x, y] += mask_x[1, 1] * pixels[x+1-offset, y+2-offset]
+			#grad_y[x, y] += mask_y[1, 2] * pixels[x+1-offset, y+2-offset]
+			#grad_x[x, y] += mask_x[2, 0] * pixels[x+2-offset, y+0-offset]
+			#grad_y[x, y] += mask_y[2, 1] * pixels[x+2-offset, y+0-offset]
+			#grad_x[x, y] += mask_x[2, 2] * pixels[x+2-offset, y+1-offset]
+			#grad_y[x, y] += mask_y[2, 0] * pixels[x+2-offset, y+1-offset]
+			#grad_x[x, y] += mask_x[2, 1] * pixels[x+2-offset, y+2-offset]
+			#grad_y[x, y] += mask_y[2, 2] * pixels[x+2-offset, y+2-offset]
+			
 			output[x, y] = 0
 
 			for i in range(0, order):

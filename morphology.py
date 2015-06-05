@@ -14,6 +14,26 @@ def complement(A):
 	return  1 - A
 
 
+"""
+def binary_erosion(A, B=None):
+	height, width = A.shape
+
+	output = np.zeros((height, width))
+	
+	order = 3#B.shape[0]
+	offset = order / 2
+
+	for x in range(offset, height - offset):
+		for y in range(offset, width - offset):
+
+			neighborhood = neighborhood = [A[x-1, y], A[x-1, y+1], A[x, y+1], A[x+1, y+1], A[x+1, y], A[x+1, y-1], A[x, y-1], A[x-1, y-1]]
+
+			output[x, y] = np.min(neighborhood)
+
+	return output
+"""
+
+
 def binary_erosion(A, B=None):
 	height = A.shape[0]
 	width = A.shape[1]
@@ -43,6 +63,10 @@ def binary_erosion(A, B=None):
 
 			output[x, y] = contained
 	return output
+
+
+#dilation -> max
+#border -> espelhar
 
 
 def binary_dilation(A, B=None):
@@ -179,38 +203,6 @@ def binary_hit_or_miss_transform(A, B=None, D=None):
 	return output.astype(np.uint8)
 """
 	
-"""
-def binary_hit_or_miss_transform(A, B = None):
-	height = A.shape[0]
-	width = A.shape[1]
-
-	order = B.shape[0]
-	offset = order / 2
-
-	output = np.zeros((height, width))
-
-	if B is None:
-		B = np.ones((3,3))
-
-	hit = 1
-
-	for x in range(offset, height - offset):
-		for y in range(offset, width - offset):
-
-			hit = 1
-			i = 0
-			
-			while i < order and hit:
-				j = 0
-				while j < order and hit:
-					if A[x+i-offset, y+j-offset] != B[i, j]:
-						hit = 0
-					j += 1
-				i += 1
-
-			output[x, y] = hit	
-	return output.astype(np.uint8)
-"""
 
 def binary_skeletonization(A, B=None):
 	height, width = A.shape
@@ -233,10 +225,8 @@ def binary_skeletonization(A, B=None):
 	K = k - 1
 
 	for k in range(0, K):
-		#S[k] = np.subtract(S[k], binary_opening(S[k], B))
-		temp = binary_dilation(S[k+1], B)
-		S[k] = np.subtract(S[k], temp)
-		S[k] = S[k].clip(0) #temp[temp < 0] = 0
+		S[k] = np.subtract(S[k], binary_opening(S[k], B))
+		#S[k] = S[k].clip(0) #temp[temp < 0] = 0
 		skel = np.logical_or(skel, S[k])
 
 	output = (skel).astype(np.uint8)#m_connectivity(skel).astype(np.uint8)
@@ -425,8 +415,8 @@ def m_connectivity(A):
 
 				d_1 = (x > 2) and (A[x-2, y-1] == 0 or A[x-2, y] == 1 or A[x-1, y-1] == 1)
 				d_2 = (y > 2) and (A[x+1, y-2] == 0 or A[x, y-2] == 1 or A[x+1, y-1] == 1)
-				d_3 = (y > 2) and (A[x-1, y+2] == 0 or A[x, y+2] == 1 or A[x-1, y+1] == 1)
-				d_4 = (y > 2) and (A[x+1, y+2] == 0 or A[x, y+2] == 1 or A[x+1, y+1] == 1)
+				d_3 = (y < width - 2) and (A[x-1, y+2] == 0 or A[x, y+2] == 1 or A[x-1, y+1] == 1)
+				d_4 = (y < width - 2) and (A[x+1, y+2] == 0 or A[x, y+2] == 1 or A[x+1, y+1] == 1)
 
 				if A[x-1, y+1] == 1 and (A[x-1, y] == 1 and d_1):
 					A[x-1, y] = 0
