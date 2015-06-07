@@ -1,6 +1,4 @@
 import numpy as np
-import util
-
 
 
 def reflection(A):
@@ -12,7 +10,6 @@ def reflection(A):
 
 def complement(A):
 	return  1 - A
-
 
 """
 def binary_erosion(A, B=None):
@@ -26,7 +23,7 @@ def binary_erosion(A, B=None):
 	for x in range(offset, height - offset):
 		for y in range(offset, width - offset):
 
-			neighborhood = neighborhood = [A[x-1, y], A[x-1, y+1], A[x, y+1], A[x+1, y+1], A[x+1, y], A[x+1, y-1], A[x, y-1], A[x-1, y-1]]
+			neighborhood = get_eight_neighborhood(A, x, y)
 
 			output[x, y] = np.min(neighborhood)
 
@@ -361,7 +358,7 @@ def zang_and_suen_binary_thining(A):
 
 				if _A[x,y] == 1:
 					#get 8-neighbors
-					neighborhood = [_A[x-1, y], _A[x-1, y+1], _A[x, y+1], _A[x+1, y+1], _A[x+1, y], _A[x+1, y-1], _A[x, y-1], _A[x-1, y-1]]
+					neighborhood =  [_A[x-1, y], _A[x-1, y+1], _A[x, y+1], _A[x+1, y+1], _A[x+1, y], _A[x+1, y-1], _A[x, y-1], _A[x-1, y-1]]
 					P2, P3, P4, P5, P6, P7, P8, P9 = neighborhood
 
 					#B_P1 is the number of nonzero neighbors of P1=(x, y)
@@ -397,20 +394,6 @@ def m_connectivity(A):
 	for x in range(1, height - 1):
 		for y in range(1, width - 1):
 
-			#p_4_neighborhood = np.array([A[x+1, y], A[x-1, y], A[x, y+1], A[x, y-1]])
-			#p_d_neighborhood = np.array([A[x+1, y+1], A[x+1, y-1], A[x-1, y+1], A[x-1, y-1]])
-			#p_8_neighborhood = p_4_neighborhood + p_d_neighborhood
-
-			#if A[x, y] == 1:
-			#	if A[x+1, y+1] == 1 and (A[x+1, y] == 1 or A[x, y+1] == 1):
-			#		A[x+1, y] = A[x, y+1] = 0
-			#	if A[x+1, y-1] == 1 and (A[x+1, y] == 1 or A[x, y-1] == 1):
-			#		A[x, y-1] = A[x+1, y] = 0
-			#	if A[x-1, y+1] == 1 and (A[x-1, y] == 1 or A[x, y+1] == 1):
-			#		A[x-1, y] = A[x, y+1] = 0
-			#	if A[x-1, y-1] == 1 and (A[x-1, y] == 1 or A[x, y-1] == 1):
-			#		A[x, y-1] = A[x-1, y] = 0
-
 			if A[x, y] == 1:
 
 				d_1 = (x > 2) and (A[x-2, y-1] == 0 or A[x-2, y] == 1 or A[x-1, y-1] == 1)
@@ -429,3 +412,15 @@ def m_connectivity(A):
 
 
 	return A
+
+
+def get_four_neighborhood(pixels, x, y):
+	neighborhood = np.array([pixels[x-1, y], pixels[x+1, y], pixels[x, y-1], pixels[x, y+1]])
+
+	return neighborhood
+
+
+def get_eight_neighborhood(pixels, x, y):
+	neighborhood = np.array([pixels[x-1, y], pixels[x+1, y], pixels[x, y-1], pixels[x, y+1], pixels[x+1, y+1], pixels[x+1, y-1], pixels[x-1, y+1], pixels[x-1, y-1]])
+
+	return neighborhood

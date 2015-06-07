@@ -12,10 +12,6 @@ def read_image(path):
 	return image
 
 
-def save_image(image, path):
-	image.save(path)
-
-
 def convert_to_gray_scale(image):
 	return image.convert('L')
 
@@ -28,6 +24,20 @@ def get_pixels(image):
 	return image.load()
 
 
+def save_image(image, path):
+	image.save(path)
+
+
+def save_image_from_binary_array(pixels, path):
+	image = convert_binary_array_to_image(pixels).convert('L')
+	save_image(image, path)
+
+
+def save_image_from_RGB_array(rgb, path):
+	image = convert_array_to_image(rgb)
+	save_image(image, path)
+
+
 def show_image_from_binary_array(pixels, title=None):
 	return convert_binary_array_to_image(pixels).show(title=title)
 
@@ -36,12 +46,12 @@ def show_image_from_RGB_array(rgb, title=None):
 	convert_array_to_image(rgb).show(title=title)
 
 
-def convert_array_to_image(pixels):
-	return Image.fromarray(pixels)
-
-
 def convert_binary_array_to_image(pixels):
 	return convert_array_to_image((255*pixels))
+
+
+def convert_array_to_image(pixels):
+	return Image.fromarray(pixels)
 
 
 def convert_binary_arrays_to_single_RGB_array(R, G, B):

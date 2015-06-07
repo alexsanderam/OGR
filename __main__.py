@@ -29,8 +29,15 @@ def __main__(argv):
 
 	print "\n"
 
+
+	#get name
+	splited = input_path.split('/')
+	name = splited[len(splited) - 1]
+	name = name.split('.')[0]
+	
+
 	pixels = ogr.read_optical_graph(input_path)
-	ogr.convert_to_topological_graph(pixels)
+	ogr.convert_to_topological_graph(pixels, name)
 
 	#if output_path != '':
 	#	util.save_image(output_image, output_path)

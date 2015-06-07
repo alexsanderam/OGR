@@ -186,26 +186,7 @@ def sobel(pixels):
 	
 	for x in range(offset, height - offset):
 		for y in range(offset, width - offset):
-			
-			#grad_x[x, y] += mask_x[0, 0] * pixels[x+0-offset, y+0-offset]
-			#grad_y[x, y] += mask_y[0, 1] * pixels[x+0-offset, y+0-offset]
-			#grad_x[x, y] += mask_x[0, 2] * pixels[x+0-offset, y+1-offset]
-			#grad_y[x, y] += mask_y[0, 0] * pixels[x+0-offset, y+1-offset]	
-			#grad_x[x, y] += mask_x[0, 1] * pixels[x+0-offset, y+2-offset]
-			#grad_y[x, y] += mask_y[0, 2] * pixels[x+0-offset, y+2-offset]
-			#grad_x[x, y] += mask_x[1, 0] * pixels[x+1-offset, y+0-offset]
-			#grad_y[x, y] += mask_y[1, 1] * pixels[x+1-offset, y+0-offset]
-			#grad_x[x, y] += mask_x[1, 2] * pixels[x+1-offset, y+1-offset]
-			#grad_y[x, y] += mask_y[1, 0] * pixels[x+1-offset, y+1-offset]
-			#grad_x[x, y] += mask_x[1, 1] * pixels[x+1-offset, y+2-offset]
-			#grad_y[x, y] += mask_y[1, 2] * pixels[x+1-offset, y+2-offset]
-			#grad_x[x, y] += mask_x[2, 0] * pixels[x+2-offset, y+0-offset]
-			#grad_y[x, y] += mask_y[2, 1] * pixels[x+2-offset, y+0-offset]
-			#grad_x[x, y] += mask_x[2, 2] * pixels[x+2-offset, y+1-offset]
-			#grad_y[x, y] += mask_y[2, 0] * pixels[x+2-offset, y+1-offset]
-			#grad_x[x, y] += mask_x[2, 1] * pixels[x+2-offset, y+2-offset]
-			#grad_y[x, y] += mask_y[2, 2] * pixels[x+2-offset, y+2-offset]
-			
+
 			output[x, y] = 0
 
 			for i in range(0, order):
