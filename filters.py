@@ -160,10 +160,9 @@ def gaussian(pixels):
 
 			for i in range(0, order):
 				for j in range(0, order):
-					#output[x, y] += mask[i, j] * pixels[x+i-offset, y+j-offset]
-					output[x, y] = np.add(output[x, y], np.dot(mask[i, j], pixels[x+i-offset, y+j-offset]))
+					output[x, y] += mask[i, j] * pixels[x+i-offset, y+j-offset]
 
-			output[x, y] = np.divide(output[x, y], 351)
+			output[x, y] /=  351
 
 	return output.astype(np.uint8)
 

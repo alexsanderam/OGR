@@ -13,6 +13,8 @@ from time import time
 import teste
 
 
+
+
 def preprocessing(pixels):
 	print "-------------Preprocessing phase--------------"
 	
@@ -54,9 +56,11 @@ def topology_recognition(pixels, vertices):
 	print "-------------Topology recognition phase--------------"
 
 	print "Skelonization image."
-	skel = morphology.zang_and_suen_binary_thining(pixels)
+	#skel = morphology.zang_and_suen_binary_thining(pixels)
 	#skel = teste.binary_skeletonization(pixels)
 	#skel = teste.binary_medial_axis(pixels)
+	skel = morphology.binary_skeletonization_by_thining(pixels)
+
 	print "Edge classification."
 	classified_pixels, port_pixels, crossing_pixels = edge_classification(skel, vertices)
 
@@ -64,6 +68,41 @@ def topology_recognition(pixels, vertices):
 	trivial_sections, port_sections, crossing_sections = edge_sections_identify(classified_pixels, port_pixels, crossing_pixels)
 
 	return skel, classified_pixels
+
+
+# def edge_classification(skel, vertices):
+# 	height, width = skel.shape
+
+# 	classified_pixels = np.zeros((skel.shape))
+# 	port_pixels = []
+# 	crossing_pixels = []
+
+# 	for x in range(1, height-1):
+# 		for y in range(1, width-1):
+
+# 			if skel[x,y] == 1 and vertices[x,y] == 0:
+
+# 				#eight neighborhood of pixel (x, y)
+# 				skel_neighborhood = morphology.get_eight_neighborhood(skel, x, y)
+
+# 				vertex_neighborhood = morphology.get_eight_neighborhood(vertices, x, y)
+# 				vertex_neighborhood_in_skel = np.multiply(skel_neighborhood, vertex_neighborhood)
+
+# 				#n0 is the number of object pixels in 8-neighborhood of (x,y)
+# 				n0 = np.sum(skel_neighborhood)
+
+# 				if n0 < 2:
+# 					classified_pixels[x,y] = 1 #miscellaneous pixels
+# 				elif n0 == 2 and np.any(vertex_neighborhood_in_skel):
+# 					classified_pixels[x,y] = 4 #port pixels
+# 					port_pixels.append((x, y))
+# 				elif n0 == 2:
+# 					classified_pixels[x,y] = 2 #edge pixels
+# 				elif n0 > 2:
+# 					classified_pixels[x,y] = 3 #crossing pixels
+# 					crossing_pixels.append((x, y))
+
+# 	return classified_pixels, port_pixels, crossing_pixels
 
 
 def edge_classification(skel, vertices):
@@ -79,16 +118,14 @@ def edge_classification(skel, vertices):
 			if skel[x,y] == 1 and vertices[x,y] == 0:
 
 				#eight neighborhood of pixel (x, y)
-				skel_neighborhood = morphology.get_eight_neighborhood(skel, x, y)
-				vertex_neighborhood = morphology.get_eight_neighborhood(vertices, x, y)
-				vertex_neighborhood_in_skel = np.multiply(skel_neighborhood, vertex_neighborhood)
+				skel_neighborhood = get_four_neighborhood(skel, x, y)
 
 				#n0 is the number of object pixels in 8-neighborhood of (x,y)
-				n0 = np.sum(skel_neighborhood)
+				n0 = sum(skel_neighborhood.values())
 
 				if n0 < 2:
 					classified_pixels[x,y] = 1 #miscellaneous pixels
-				elif n0 == 2 and np.any(vertex_neighborhood_in_skel):
+				elif n0 == 2 and n_vertex_pixel_in_neighborhood(skel, skel_neighborhood, vertices) > 0:
 					classified_pixels[x,y] = 4 #port pixels
 					port_pixels.append((x, y))
 				elif n0 == 2:
@@ -96,8 +133,70 @@ def edge_classification(skel, vertices):
 				elif n0 > 2:
 					classified_pixels[x,y] = 3 #crossing pixels
 					crossing_pixels.append((x, y))
+			
 
 	return classified_pixels, port_pixels, crossing_pixels
+
+
+
+# def get_four_neighborhood(pixels, x, y):
+# 	neighborhood = np.array([pixels[x-1, y], pixels[x+1, y], pixels[x, y-1], pixels[x, y+1]])
+# 	return neighborhood
+
+
+# def get_diagonal_neighborhood(pixels, x, y):
+# 	neighborhood = np.array([pixels[x-1, y-1], pixels[x+1, y-1], pixels[x-1, y+1], pixels[x+1, y+1]])
+# 	return neighborhood
+
+
+# def get_eight_neighborhood(pixels, x, y):
+# 	neighborhood = np.array([pixels[x-1, y], pixels[x+1, y], pixels[x, y-1], pixels[x, y+1], pixels[x+1, y+1], pixels[x+1, y-1], pixels[x-1, y+1], pixels[x-1, y-1]])
+# 	return neighborhood
+
+
+
+def get_four_neighborhood(pixels, x, y):
+	neighborhood = {}
+	neighborhood[x-1, y] = pixels[x-1, y]
+	neighborhood[x+1, y] = pixels[x+1, y]
+	neighborhood[x, y-1] = pixels[x, y-1]
+	neighborhood[x, y+1] = pixels[x, y+1]
+
+	return neighborhood
+
+
+# def get_diagonal_neighborhood(pixels, x, y):
+# 	neighborhood = {}
+# 	neighborhood[x-1, y-1] = pixels[x-1, y-1]
+# 	neighborhood[x+1, y-1] = pixels[x+1, y-1]
+# 	neighborhood[x-1, y+1] = pixels[x-1, y+1]
+# 	neighborhood[x+1, y+1] = pixels[x+1, y+1]
+
+# 	return neighborhood
+
+
+# def get_eight_neighborhood(pixels, x, y):
+# 	neighborhood = {}
+# 	neighborhood[x-1, y] = pixels[x-1, y]
+# 	neighborhood[x+1, y] = pixels[x+1, y]
+# 	neighborhood[x, y-1] = pixels[x, y-1]
+# 	neighborhood[x, y+1] = pixels[x, y+1]
+# 	neighborhood[x+1, y+1] = pixels[x+1, y+1]
+# 	neighborhood[x+1, y-1] = pixels[x+1, y-1]
+# 	neighborhood[x-1, y+1] = pixels[x-1, y+1]
+# 	neighborhood[x-1, y-1] = pixels[x-1, y-1]
+
+# 	return neighborhood
+
+
+
+def n_vertex_pixel_in_neighborhood(skel, neighborhood, vertices):
+	n = 0
+	for pos in neighborhood:
+		if skel[pos] == 1 and vertices[pos] == 1:
+			n += 1
+	return n
+
 
 
 def edge_sections_identify(classified_pixels, port_pixels, crossing_pixels):
@@ -232,8 +331,6 @@ def convert_to_topological_graph(pixels, name=None):
 	start_time = time()
 
 	#call segmentation phase
-	#pm: miscellaneous pixels, pe: edge pixels, pp: port pixels, pc: crossing pixels
-	#skel, pm, pe, pp, pc = topology_recognition(pixels, vertices)
 	skel, classified_pixels = topology_recognition(pixels, vertices)
 
 	#get end time of preprocessing phase
@@ -242,26 +339,26 @@ def convert_to_topological_graph(pixels, name=None):
 	print "Time spent in the topology recognition phase: %.4f(s)\n" % (spent_time)
 
 	#Visualization
-	# edge_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	# crossing_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	# port_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	# for x in range(classified_pixels.shape[0]):
-	# 	for y in range(classified_pixels.shape[1]):
-	# 	 	if classified_pixels[x, y] == 2:
-	# 	 		edge_pixels[x, y] = 1
-	# 	 	elif classified_pixels[x, y] == 3:
-	# 	 		crossing_pixels[x,y] = 1
-	# 	 	elif classified_pixels[x, y] == 4:
-	# 	 		port_pixels[x,y] = 1
+	edge_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	crossing_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	port_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	for x in range(classified_pixels.shape[0]):
+		for y in range(classified_pixels.shape[1]):
+		 	if classified_pixels[x, y] == 2:
+		 		edge_pixels[x, y] = 1
+		 	elif classified_pixels[x, y] == 3:
+		 		crossing_pixels[x,y] = 1
+		 	elif classified_pixels[x, y] == 4:
+		 		port_pixels[x,y] = 1
 
-	# rgb = util.convert_binary_arrays_to_single_RGB_array(port_pixels, crossing_pixels, edge_pixels)
+	rgb = util.convert_binary_arrays_to_single_RGB_array(port_pixels, crossing_pixels, edge_pixels)
 	
-	# #util.show_image_from_RGB_array(rgb, "Segmented")
-	# #util.show_image_from_binary_array(skel, "Skelonization")
+	#util.show_image_from_RGB_array(rgb, "Segmented")
+	#util.show_image_from_binary_array(skel, "Skelonization")
 
-	# if not name is None:
-	# 	util.save_image_from_RGB_array(rgb, "../Resultados/Parcial/" + name + "_segmented.png")
-	# 	util.save_image_from_binary_array(skel, "../Resultados/Parcial/" + name + "_skel.png")
+	if not name is None:
+		util.save_image_from_RGB_array(rgb, "../Resultados/Parcial/" + name + "_segmented.png")
+		util.save_image_from_binary_array(skel, "../Resultados/Parcial/" + name + "_skel.png")
 	#====================================================================================
 
 
