@@ -63,6 +63,11 @@ def convert_binary_arrays_to_single_RGB_array(R, G, B):
 	return rgb.astype(np.uint8)
 
 
+"""
+vertices, [255, 255, 0], edges, [255, 0, 0], port_pixels, [0, 0, 255], crossing_pixels, [0, 255, 0]
+"""
+
+
 def binarization(pixels, k):
 
 	#height = pixels.shape[0]

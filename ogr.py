@@ -64,8 +64,8 @@ def topology_recognition(pixels, vertices):
 	print "Edge classification."
 	classified_pixels, port_pixels, crossing_pixels = edge_classification(skel, vertices)
 
-	print "Edges section identify."
-	trivial_sections, port_sections, crossing_sections = edge_sections_identify(classified_pixels, port_pixels, crossing_pixels)
+	#print "Edges section identify."
+	#trivial_sections, port_sections, crossing_sections = edge_sections_identify(classified_pixels, port_pixels, crossing_pixels)
 
 	return skel, classified_pixels
 
@@ -320,8 +320,6 @@ def convert_to_topological_graph(pixels, name=None):
 	print "Time spent in the segmentation phase: %.4f(s)\n" % (spent_time)
 
 	#Visualization
-	#rgb = util.convert_binary_arrays_to_single_RGB_array(vertices, np.zeros((pixels.shape)), edges)
-	#util.show_image_from_RGB_array(rgb, "Segmented")
 	util.show_image_from_binary_array(vertices, "Vertices")
 	#====================================================================================
 
