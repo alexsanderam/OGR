@@ -95,19 +95,6 @@ def get_connected_components_bfs_search(vertices_pixel):
 
 
 
-
-def get_vertices_coordinates(vertices_connected_components):
-	vertices_coordinates = dict.fromkeys(vertices_connected_components, (0, 0))
-
-	for label in vertices_connected_components:
-		[x, y] =  map(sum, zip(*vertices_connected_components[label]))
-		n = len(vertices_connected_components[label])
-		vertices_coordinates[label]  = (x / n, y / n)
-
-	return vertices_coordinates
-
-
-
 def topology_recognition(pixels, vertices_pixel):
 	print "-------------Topology recognition phase--------------"
 
@@ -317,7 +304,6 @@ def edge_sections_identify(classified_pixels, port_pixels, crossing_pixels):
 			start_pixels[(next[0], next[1])] = 1
 
 			trivial_sections.append(section)
-			#start_pixels.remove(next)
 
 		elif next_value == 3: #crossing pixel
 			section.append(next)
@@ -338,6 +324,29 @@ def postprocessing():
 	print "-------------Posprocessing phase--------------"
 	return None
 
+
+
+def get_vertices_coordinates(vertices_connected_components):
+	vertices_coordinates = dict.fromkeys(vertices_connected_components, (0, 0))
+
+	for label in vertices_connected_components:
+		[x, y] =  map(sum, zip(*vertices_connected_components[label]))
+		n = len(vertices_connected_components[label])
+		vertices_coordinates[label]  = (x / n, y / n)
+
+	return vertices_coordinates
+
+
+
+def get_edges_coordinates(edges_section, k=10):
+	n = np.count_nonzero(edges_section)
+	step_size = n / k
+	edges_sample = np.zeros((k, 2))
+
+	for i in range(0, k):
+		edges_sample[i] = edges_section[i * step_size]
+
+	return edges_sample
 
 
 def read_optical_graph(path):
@@ -386,7 +395,7 @@ def convert_to_topological_graph(pixels, name=None):
 	print "Time spent in the segmentation phase: %.4f(s)\n" % (spent_time)
 
 	#Visualization
-	#util.show_image_from_binary_array(vertices_pixel, "Vertices")
+	util.show_image_from_binary_array(vertices_pixel, "Vertices")
 
 	#array_connected_components, connected_components = get_connected_components_bfs_search(vertices_pixel)
 	#vertices_coordinates = get_vertices_coordinates(connected_components)
@@ -398,34 +407,34 @@ def convert_to_topological_graph(pixels, name=None):
 	start_time = time()
 
 	#call segmentation phase
-	#skel, classified_pixels = topology_recognition(pixels, vertices)
+	skel, classified_pixels = topology_recognition(pixels, vertices_pixel)
 
 	#get end time of preprocessing phase
 	end_time = time()
 	spent_time = (end_time - start_time)
-	# print "Time spent in the topology recognition phase: %.4f(s)\n" % (spent_time)
+	print "Time spent in the topology recognition phase: %.4f(s)\n" % (spent_time)
 
 	# #Visualization
-	# edge_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	# crossing_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	# port_pixels = np.zeros((pixels.shape), dtype=np.uint8)
-	# for x in range(classified_pixels.shape[0]):
-	# 	for y in range(classified_pixels.shape[1]):
-	# 	 	if classified_pixels[x, y] == 2:
-	# 	 		edge_pixels[x, y] = 1
-	# 	 	elif classified_pixels[x, y] == 3:
-	# 	 		crossing_pixels[x,y] = 1
-	# 	 	elif classified_pixels[x, y] == 4:
-	# 	 		port_pixels[x,y] = 1
+	edge_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	crossing_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	port_pixels = np.zeros((pixels.shape), dtype=np.uint8)
+	for x in range(classified_pixels.shape[0]):
+		for y in range(classified_pixels.shape[1]):
+		 	if classified_pixels[x, y] == 2:
+		 		edge_pixels[x, y] = 1
+		 	elif classified_pixels[x, y] == 3:
+		 		crossing_pixels[x,y] = 1
+		 	elif classified_pixels[x, y] == 4:
+		 		port_pixels[x,y] = 1
 
-	# rgb = util.convert_binary_arrays_to_single_RGB_array(port_pixels, crossing_pixels, edge_pixels)
+	rgb = util.convert_binary_arrays_to_single_RGB_array(port_pixels, crossing_pixels, edge_pixels)
 	
-	# #util.show_image_from_RGB_array(rgb, "Segmented")
-	# #util.show_image_from_binary_array(skel, "Skelonization")
+	#util.show_image_from_RGB_array(rgb, "Segmented")
+	#util.show_image_from_binary_array(skel, "Skelonization")
 
-	# if not name is None:
-	# 	util.save_image_from_RGB_array(rgb, "../Resultados/Parcial/" + name + "_segmented.png")
-	# 	util.save_image_from_binary_array(skel, "../Resultados/Parcial/" + name + "_skel.png")
+	if not name is None:
+		util.save_image_from_RGB_array(rgb, "../Resultados/Parcial/" + name + "_segmented.png")
+		util.save_image_from_binary_array(skel, "../Resultados/Parcial/" + name + "_skel.png")
 	#====================================================================================
 
 
