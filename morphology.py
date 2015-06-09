@@ -3,6 +3,10 @@ import numpy as np
 import teste
 
 
+"""
+Input: Set of binary pixels A.
+Output: The result of reflection of A on the x and y axes.
+"""
 def reflection(A):
 	output = np.fliplr(A)
 	output = output[::-1]
@@ -10,16 +14,28 @@ def reflection(A):
 	return output	
 
 
+"""
+Input: Set of binary pixels A.
+Output: Complement of A - if A[i] = 1, the A[i] = 0, otherwise A[i] = 1.
+"""
 def complement(A):
 	return  1 - A
 
 
-
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of erosion of A using the structuring element B (if given, otherwise using a default structuring element).
+# """
 # def binary_erosion(A, B=None):
 # 	return teste.binary_erosion(A, B)
 
 
 
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of erosion of A using the structuring element B (if given, otherwise using a default structuring element).
+# Obs: This implementation does not consider correspondence with the background and not don't care positions. Borders are ignored.
+# """
 # def binary_erosion(A, B=None):
 # 	height = A.shape[0]
 # 	width = A.shape[1]
@@ -51,7 +67,11 @@ def complement(A):
 # 	return output
 
 
-
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of erosion of A using the structuring element B (if given, otherwise using a default structuring element).
+# Obs: This implementation consider correspondence with the background, but not don't care positions. Borders are ignored.
+# """
 # def binary_erosion(A, B=None):
 # 	height = A.shape[0]
 # 	width = A.shape[1]
@@ -71,6 +91,11 @@ def complement(A):
 # 	return output
 
 
+"""
+Input: Set of binary pixels A, and structuring element B (optional).
+Output: Result of erosion of A using the structuring element B (if given, otherwise using a default structuring element).
+Obs: This implementation consider correspondence with the background, and don't care positions (expressed by negative values). Borders are ignored.
+"""
 def binary_erosion(A, B=None):
 	height = A.shape[0]
 	width = A.shape[1]
@@ -101,12 +126,19 @@ def binary_erosion(A, B=None):
 
 
 
-
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of dilation of A using the structuring element B (if given, otherwise using a default structuring element).
+# """
 # def binary_dilation(A, B=None):
 #  	return teste.binary_dilation(A, B)
 
 
-
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of dilation of A using the structuring element B (if given, otherwise using a default structuring element).
+# Obs: This implementation does not consider correspondence with the background. Borders are ignored.
+# """
 # def binary_dilation(A, B=None):
 # 	height = A.shape[0]
 # 	width = A.shape[1]
@@ -159,7 +191,11 @@ def binary_erosion(A, B=None):
 # 	return output
 
 
-
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of dilation of A using the structuring element B (if given, otherwise using a default structuring element).
+# Obs: This implementation consider correspondence with the background. Borders are ignored.
+# """
 # def binary_dilation(A, B=None):
 # 	height, width = A.shape
 # 	output = np.zeros((height, width))
@@ -179,7 +215,11 @@ def binary_erosion(A, B=None):
 # 	return output
 
 
-
+"""
+Input: Set of binary pixels A, and structuring element B (optional).
+Output: Result of dilation of A using the structuring element B (if given, otherwise using a default structuring element).
+Obs: This implementation consider correspondence with the background and don't care positions. Borders are ignored.
+"""
 def binary_dilation(A, B=None):
 	height, width = A.shape
 	output = np.zeros((height, width))
@@ -200,7 +240,11 @@ def binary_dilation(A, B=None):
 	return output
 
 
-
+"""
+Input: Set of binary pixels A, structuring element B (optional) and number of iterations k (if not specified, k = 1 by default).
+Output: Result of k erosions of A using the structuring element B and k dilations of the result of previous step using B.
+		Opening of A using using the structuring element B, with k iterations.
+"""
 def binary_opening(A, B=None, k=1):
 	output = np.copy(A)
 
@@ -216,6 +260,12 @@ def binary_opening(A, B=None, k=1):
 	return output
 
 
+
+"""
+Input: Set of binary pixels A, structuring element B (optional) and number of iterations k (if not specified, k = 1 by default).
+Output: Result of k dilations of A using the structuring element B and k erosions of the result of previous step using B.
+		Closing of A using using the structuring element B, with k iterations.
+"""
 def binary_closing(A, B=None, k=1):
 	output = np.copy(A)
 
@@ -231,10 +281,19 @@ def binary_closing(A, B=None, k=1):
 	return output
 
 
+
+"""
+Input: Set of binary pixels A, and structuring element B (optional).
+Output: Result of binary bound extraction of A using structuring element B.
+"""
 def binary_bondary_extraction(A, B=None):
 	return A - binary_erosion(A, B)
 
 
+"""
+Input: Set of binary pixels A, structuring element B (optional) and object D (optional).
+Output: Result of hit ot miss transform of A using structuring element B and D.
+"""
 def binary_hit_or_miss_transform(A, B=None, D=None):
 	if B is None:
 		B = np.ones((3,3))
@@ -258,6 +317,10 @@ def binary_hit_or_miss_transform(A, B=None, D=None):
 
 
 
+# """
+# Input: Set of binary pixels A, structuring element B (optional) and object D (optional).
+# Output: Result of hit ot miss transform of A using structuring element B and D.
+# """
 # def binary_hit_or_miss_transform(A, B=None, D=None):
 # 	if B is None:
 # 		B = np.ones((3,3))
@@ -285,6 +348,10 @@ def binary_hit_or_miss_transform(A, B=None, D=None):
 
 	
 
+"""
+Input: Set of binary pixels A, and structuring element B (optional).
+Output: Result of medial axis transform of A using structuring element B.
+"""
 def binary_skeletonization(A, B=None):
 	height, width = A.shape
 
@@ -317,6 +384,10 @@ def binary_skeletonization(A, B=None):
 	return output
 
 
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of medial axis transform of A using structuring element B.
+# """
 # def binary_skeletonization(A, B=None):
 # 	height, width = A.shape
 	
@@ -339,8 +410,12 @@ def binary_skeletonization(A, B=None):
 # 	return output
 
 
-
-# def binary_thining(A, B=None,  D=None):
+# """
+# Input: Set of binary pixels A, and structuring element B (optional).
+# Output: Result of thinning of A using structuring element B.
+# Obs: 	This implementation consider the background of image A
+# """
+# def binary_thinning(A, B=None,  D=None):
 # 	temp = binary_hit_or_miss_transform(A, B, D)
 # 	output = np.subtract(A, temp)
 # 	output = output.clip(0) #output[output < 0] = 0	
@@ -349,8 +424,13 @@ def binary_skeletonization(A, B=None):
 # 	return output
 
 
+"""
+Input: Set of binary pixels A, and structuring element B (optional).
+Output: Result of thinning of A using structuring element B.
+Obs: 	This implementation does not consider the background of image A
+"""
 #background operations are not required
-def binary_thining(A, B=None):
+def binary_thinning(A, B=None):
 	temp = binary_erosion(A, B)
 	output = np.subtract(A, temp)
 	output = output.clip(0) #output[output < 0] = 0	
@@ -359,7 +439,11 @@ def binary_thining(A, B=None):
 	return output
 
 
-# def binary_skeletonization_by_thining(A, S=None):
+# """
+# Input:  Set of binary pixels A, and list S of structuring elements (optional).
+# Output: Result of skeletonization of A by morphology thinning using sequence of structuring elements in S.
+# """
+# def binary_skeletonization_by_thinning(A, S=None):
 # 	height = A.shape[0]
 # 	width = A.shape[0]
 
@@ -413,13 +497,17 @@ def binary_thining(A, B=None):
 		
 # 		i = 0
 # 		while i < len(S):
-# 			result = binary_thining(result, S[i])
+# 			result = binary_thinning(result, S[i])
 # 			i += 1
 
 # 	return output.astype(np.uint8)
 
 
-def binary_skeletonization_by_thining(A):
+"""
+Input:  Set of binary pixels A.
+Output: Result of skeletonization of A by morphology thinning using a sequence of default structuring elements.
+"""
+def binary_skeletonization_by_thinning(A):
 	height, width = A.shape
 
 	output = np.zeros((height, width))
@@ -438,19 +526,23 @@ def binary_skeletonization_by_thining(A):
 	while not np.array_equal(output, result): #very slow
 		output = result
 		
-		result = binary_thining(result, B1)
-		result = binary_thining(result, B2)
-		result = binary_thining(result, B3)
-		result = binary_thining(result, B4)
-		result = binary_thining(result, B5)
-		result = binary_thining(result, B6)
-		result = binary_thining(result, B7)
-		result = binary_thining(result, B8)
+		result = binary_thinning(result, B1)
+		result = binary_thinning(result, B2)
+		result = binary_thinning(result, B3)
+		result = binary_thinning(result, B4)
+		result = binary_thinning(result, B5)
+		result = binary_thinning(result, B6)
+		result = binary_thinning(result, B7)
+		result = binary_thinning(result, B8)
 
 	return result.astype(np.uint8)
 
 
-def zang_and_suen_binary_thining(A):
+"""
+Input:  Set of binary pixels A.
+Output: Result of skeletonization of A by Zang and Suen Algorithm, and applying an m-connectivity algorithm.
+"""
+def zang_and_suen_binary_thinning(A):
 	height = A.shape[0]
 	width = A.shape[1]
 
@@ -520,12 +612,15 @@ def zang_and_suen_binary_thining(A):
 			_A[x, y] = 0
 		del removed_points[:]
 
-
-	output = _A
+	output = m_connectivity(_A)
 
 	return output
 
 
+"""
+Input:  Set of binary pixels A.
+Output: Result of m-connectivity of A.
+"""
 def m_connectivity(A):
 	height, width = A.shape
 
