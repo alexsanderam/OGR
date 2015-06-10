@@ -9,6 +9,9 @@ import graph
 from PIL import Image
 from time import time
 
+from circular_list import *
+from collections import Counter
+
 
 import teste
 
@@ -251,52 +254,23 @@ def edge_sections_identify(classified_pixels, port_pixels, crossing_pixels):
 	start_pixels = {}
 	start_pixels = dict.fromkeys(port_pixels, 0)
 
-	delta = np.array([0, 0])
+	crossing_pixels_in_port_sectins = {}
+
+	#dictionary of predecessors de crossing pixels
+	back_port_sections = {}
 
 	for start in start_pixels:
 
 		#if port pixel is already visited, then continue
 		if start_pixels[start] == 1:
 			continue
-
-		section = []
-		section.append(start)
-		#marks start pixel as already visited
-		start_pixels[start] = 1
-
-		x, y = start
-		neighborhood_positions = np.array([[x-1, y-1], [x-1, y], [x-1,y+1], [x, y-1], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]])
-		neighborhood = np.array([classified_pixels[x-1, y-1], classified_pixels[x-1, y], classified_pixels[x-1,y+1], classified_pixels[x, y-1], classified_pixels[x, y+1], classified_pixels[x+1, y-1], classified_pixels[x+1, y], classified_pixels[x+1, y+1]])
-
-		next = neighborhood_positions[neighborhood.argmax()]
-		next_value = classified_pixels[next[0], next[1]]
-		delta = np.subtract(next, start)
-
-
-		while next_value == 2: #edge pixel
-			section.append(next)
-
-			next = np.add(next, delta)
-			next_value = classified_pixels[next[0], next[1]]
-
-
-			if next_value < 2: #blank pixel or miscellaneous pixel
-				last = section[-1] #get last element added in section
-				x, y =  last
-				back = np.subtract(last, delta)
-
-				#get max value in the neighborhood, unless the 'back'
-				next_value  = -1
-				for i in range(0, 3):
-					for j in range(0, 3):
-
-						if (x+i-1 != back[0] or y+j-1 != back[1]) and (i != 1 or j != 1) and (classified_pixels[x+i-1, y+j-1] > next_value):
-							next = (x+i-1, y+j-1)
-							next_value = classified_pixels[x+i-1, y+j-1]
-				
-				delta = np.subtract(next, last)
-
+		else:
+			#marks start pixel as already visited
+			start_pixels[start] = 1
+			section, last_gradients, next = get_basic_section(start, classified_pixels)
 		
+		next_value = classified_pixels[next[0], next[1]]
+
 		if next_value == 4: #port pixel
 			section.append(next)
 
@@ -306,8 +280,80 @@ def edge_sections_identify(classified_pixels, port_pixels, crossing_pixels):
 			trivial_sections.append(section)
 
 		elif next_value == 3: #crossing pixel
+			#get last element in section before crossing pixel
+			#back = section[-1][0], section[-1][1]
+			
 			section.append(next)
 			port_sections.append(section)
+
+			pos = (next[0], next[1])
+			#if not pos in back_port_sections:
+			#	back_port_sections[pos] = []
+
+			#back_port_sections[pos].append(back)
+
+			if not pos in crossing_pixels_in_port_sectins:
+				crossing_pixels_in_port_sectins[pos] = []
+
+			crossing_pixels_in_port_sectins[pos].append(section)
+
+	#clear dictionary of start pixels
+	start_pixels.clear()
+	#start_pixels = dict.fromkeys(crossing_pixels_in_port_sectins, 0)
+
+	#counter gradients frequency
+	cnt_gradient = Counter(last_gradients.get_list())
+	#count in list
+	grads = cnt_gradient.most_common()
+
+	for crossing_pixel in crossing_pixels_in_port_sectins:
+		for section in crossing_pixels_in_port_sectins[crossing_pixel]:
+
+			back = section[-1][0], section[-1][1]
+
+			next_value = 0
+			i = 0
+			
+			while next_value != 2: #edge pixel
+
+				while next_value < 2 and i < len(grads):
+					delta = grads[i][0]
+
+					next = np.add(crossing_pixel, delta)
+
+					if next[0] == back[0] and next[1] == back[1]:
+						next_value = 0
+					else:
+						next_value = classified_pixels[next[0], next[1]]
+
+					i += 1
+
+
+				if next_value < 2 and i == len(grads):
+					delta = get_gradient(classified_pixels, grads)
+					next = np.add(crossing_pixel, delta)
+					next_value = classified_pixels[next[0], next[1]]
+
+				section.append(next)
+
+
+			#back is an crossing pixel
+			back = section[-1][0], section[-1][1]
+			#pos = (back[0], back[1])
+
+			if back in crossing_pixels_in_port_sectins:
+				
+				for _section in crossing_pixels_in_port_sectins[back]:
+					if next[0] == _section[-2][0] and next[1] == _section[-2][1]:
+							_section.extend(section[::-1][1:])
+							#mark back as already visited
+			else:
+				_section, _last_gradients, next = get_basic_section(next, classified_pixels)
+
+				#unnecessary
+				_last_gradients.clear()
+				del _last_gradients
+
 
 
 	print len(trivial_sections), len(port_sections)
@@ -315,15 +361,85 @@ def edge_sections_identify(classified_pixels, port_pixels, crossing_pixels):
 
 
 
+def get_basic_section(start, classified_pixels):
+
+	#'gradient' vector
+	delta = np.array([0, 0])
+	
+	last_gradients = Circular_list()
+
+	section = []
+	section.append(start)
+
+	x, y = start
+	neighborhood_positions = np.array([[x-1, y-1], [x-1, y], [x-1,y+1], [x, y-1], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]])
+	neighborhood = np.array([classified_pixels[x-1, y-1], classified_pixels[x-1, y], classified_pixels[x-1,y+1], classified_pixels[x, y-1], classified_pixels[x, y+1], classified_pixels[x+1, y-1], classified_pixels[x+1, y], classified_pixels[x+1, y+1]])
+
+	next = neighborhood_positions[neighborhood.argmax()]
+	next_value = classified_pixels[next[0], next[1]]
+	delta = np.subtract(next, start)
+
+
+	while next_value == 2: #edge pixel
+
+		last_gradients.insert(delta)
+		section.append(next)
+
+		next = np.add(next, delta)
+		next_value = classified_pixels[next[0], next[1]]
+
+
+		if next_value < 2: #blank pixel or miscellaneous pixel
+			last = section[-1] #get last element added in section
+			x, y =  last
+			back = np.subtract(last, delta)
+
+			#get max value in the neighborhood, unless the 'back'
+			next_value  = -1
+			for i in range(0, 3):
+				for j in range(0, 3):
+
+					if (x+i-1 != back[0] or y+j-1 != back[1]) and (i != 1 or j != 1) and (classified_pixels[x+i-1, y+j-1] > next_value):
+						next = (x+i-1, y+j-1)
+						next_value = classified_pixels[x+i-1, y+j-1]
+			
+			delta = np.subtract(next, last)
+
+	last_gradients.insert(delta)
+	last_element = next
+
+	return section, last_gradients, last_element
+
+
+def get_gradient(classified_pixels, grads):
+	possible_grads = {[0, 1], [1, 0], [1, 1], [-1, 1], [-1, -1], [1, -1], [0, -1], [-1, 0]}
+	most_common_grad = grads[0][0]
+	possible_grads = possible_grads - set(grads)
+
+
+	min_d = flot('inf')
+	for grad in possible_grads:
+		d = weighted_euclidean_distance(most_common_grad, grad)
+
+		if d < min_d and classified_pixes[grad[0], grad[1]] > 1:
+			min_grad = grad
+
+	return min_grad
+
+
+def weighted_euclidean_distance(grad1, grad2, alpha=2, betha=4):
+	[x, y] = map(np.subtract, *zip(grad1, grad2))
+	d = np.sqrt(alpha* (x**2) + betha * (y**2))
+	return d
+
+
 def traversal_subphase(classified_pixels, port_pixels, crossing_pixels, section):
 	return None
-
 
 
 def postprocessing():
 	print "-------------Posprocessing phase--------------"
 	return None
-
 
 
 def get_vertices_coordinates(vertices_connected_components):
@@ -335,7 +451,6 @@ def get_vertices_coordinates(vertices_connected_components):
 		vertices_coordinates[label]  = (x / n, y / n)
 
 	return vertices_coordinates
-
 
 
 def get_edges_coordinates(edges_section, k=10):
