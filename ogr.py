@@ -517,11 +517,10 @@ def get_max_neighbor(classified_pixels, x, y, back=None):
 
 
 #change name of this function
-def get_gradient(classified_pixels, back, current, grads, excluded_grad=None):
+def get_gradient(classified_pixels, back, current, common_grads, excluded_grad=None):
 
 	possible_grads = {(0, 1), (1, 0), (1, 1), (-1, 1), (-1, -1), (1, -1), (0, -1), (-1, 0)}
-	most_common_grad = grads[0][0]
-	s_grads = [x[0] for x in grads]
+	s_grads = [x[0] for x in common_grads]
 	possible_grads = possible_grads - set(s_grads)
 
 	if not excluded_grad is None:
@@ -535,7 +534,7 @@ def get_gradient(classified_pixels, back, current, grads, excluded_grad=None):
 
 		sat_condition = (aux[0] != back[0] or aux[1] != back[1]) and (classified_pixels[aux[0], aux[1]] > 1)
 	
-		d = weighted_euclidean_distance(most_common_grad, grad)
+		d = distance_heuristic_grads(common_grads, possible_grads, grad)
 
 		if sat_condition and (d < min_d):
 			min_d = d
@@ -544,7 +543,45 @@ def get_gradient(classified_pixels, back, current, grads, excluded_grad=None):
 	return min_grad
 
 
-def weighted_euclidean_distance(grad1, grad2, alpha=4, betha=1):
+
+def distance_heuristic_grads(common_grads, possible_grads, grad):
+	
+	n = 0.0
+	average_common_grad = [0.0, 0.0]
+	#most_common_grad = grads[0][0]
+
+	for _grad in common_grads:
+		aux =  [_grad[1] * z for z in _grad[0]]
+		average_common_grad = map(sum, zip(average_common_grad, aux))
+		n += _grad[1]
+
+	average_common_grad = [z / n for z in average_common_grad]
+
+	#determine weights to calculate distances
+	amount_non_zero_x = 0
+	amount_non_zero_y = 0 
+
+	for _grad in common_grads:
+		if _grad[0][0] != 0:
+			amount_non_zero_x += _grad[1]
+		if _grad[0][1] != 0:
+			amount_non_zero_y += _grad[1]
+
+	total_non_zeros = amount_non_zero_x + amount_non_zero_y
+	
+
+	alpha = (total_non_zeros - amount_non_zero_y)
+	betha = (total_non_zeros - amount_non_zero_x)
+
+	d = weighted_euclidean_distance(average_common_grad, grad, alpha, betha)
+	#d = weighted_euclidean_distance(most_common_grad, grad, alpha, betha)
+	#print amount_non_zero_x, amount_non_zero_y, "alpha: ", alpha, "betha: ", betha, "distance: ", d
+
+	return d
+
+
+
+def weighted_euclidean_distance(grad1, grad2, alpha=1, betha=1):
 	[x, y] = [grad1[0] - grad2[0], grad1[1] - grad2[1]]
 	d = np.sqrt((alpha* (x**2)) + (betha * (y**2)))
 	return d
