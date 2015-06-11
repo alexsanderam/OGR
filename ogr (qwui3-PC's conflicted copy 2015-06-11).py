@@ -14,7 +14,7 @@ from collections import Counter
 
 
 import networkx as nx
-import matplotlib.pyplot as plt
+
 
 import teste
 
@@ -632,17 +632,17 @@ def postprocessing(vertices_pixel, dict_edge_sections):
 		G.add_node(u, x=vertices_coordinates[u][0], y=vertices_coordinates[u][1])
 
 
-	print "Getting edges extremes and adding edges in the graph."
+	print "Getting edges extreme and adding edges in the graph."
 	for (pos_u, pos_v) in dict_edge_sections:
 		
 		u = array_connected_components[pos_u[0], pos_u[1]]
 		v = array_connected_components[pos_v[0], pos_v[1]]
 
-		#edge_coordinates = get_edges_coordinates(dict_edge_sections[pos_u, pos_v])
+		edge_coordinates = get_edges_coordinates(dict_edge_sections[pos_u, pos_v])
 
-		G.add_edge(u, v)#, Path=edge_coordinates)
+		G.add_edge(u, v, Path=edge_coordinates)
 
-	return G, vertices_coordinates
+	return G
 
 
 def get_vertices_coordinates(vertices_connected_components):
@@ -659,10 +659,10 @@ def get_vertices_coordinates(vertices_connected_components):
 def get_edges_coordinates(edge_section, k=10):
 	n = len(edge_section)
 	step_size = n / k
-	edges_sample = []
+	edges_sample = np.zeros((k, 2))
 
 	for i in range(0, k):
-		edges_sample.append(edge_section[i * step_size])
+		edges_sample[i] = edge_section[i * step_size]
 
 	return edges_sample
 
@@ -677,9 +677,6 @@ def save_topological_graph(G, path):
 
 
 def convert_to_topological_graph(pixels, path = None, name=None):
-
-	pixels = np.rot90(pixels, 3)
-	
 	start_wall_time = time()
 
 	#====================================================================================
@@ -733,7 +730,7 @@ def convert_to_topological_graph(pixels, path = None, name=None):
 
 
 	#call posprocessing phase
-	G, vertices_coordinates = postprocessing(vertices_pixel, dict_edge_sections)
+	G = postprocessing(vertices_pixel, dict_edge_sections)
 
 	#get end time of posprocessing phase
 	end_time = time()
@@ -756,23 +753,16 @@ def convert_to_topological_graph(pixels, path = None, name=None):
 	print "Graph edges: ", G.edges()
 
 	if not (path is None or name is None):
-		save_topological_graph(G, path + name + ".graphml")
-		print "\nGraphml saved on path: " + path + name + ".graphml"
+		
+		print "\nGraphml saved on path: " + path + name + "."
+
 	#====================================================================================	
 
 
 	#====================================================================================
 	#Visualization
-
-	colors=range(len(dict_edge_sections))
-	nx.draw(G, pos=vertices_coordinates, node_color='#A0CBE2',edge_color=colors, width=4, edge_cmap=plt.cm.winter,with_labels=False)
-	plt.draw()
-	plt.show()
-
-
 	if not (path is None or name is None):
 
-		plt.savefig(path + name + "_result.png")
 
 		util.save_image_from_binary_array(preprocessing_pixels, path + name + "_preprocessing.png")
 

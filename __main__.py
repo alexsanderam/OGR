@@ -9,8 +9,8 @@ import ogr
 
 def __main__(argv):
 	
-	input_path = ''
-	output_path = ''
+	input_path = None
+	output_path = None
 
 	try:
 		opts, args = getopt.getopt(argv, "i:o:", ["input=", "output="])
@@ -37,7 +37,7 @@ def __main__(argv):
 	
 
 	pixels = ogr.read_optical_graph(input_path)
-	ogr.convert_to_topological_graph(pixels, name)
+	ogr.convert_to_topological_graph(pixels, output_path, name)
 
 	#if output_path != '':
 	#	util.save_image(output_image, output_path)
