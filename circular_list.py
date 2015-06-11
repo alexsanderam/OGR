@@ -1,7 +1,7 @@
 
 class Circular_list(list):
 
-	def __init__(self, M=15):
+	def __init__(self, M=25):
 		self._index = 0
 		self._l = []
 		self._M = M
