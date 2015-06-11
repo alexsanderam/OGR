@@ -4,8 +4,6 @@ import morphology
 
 import numpy as np
 
-import graph
-
 from PIL import Image
 from time import time
 
