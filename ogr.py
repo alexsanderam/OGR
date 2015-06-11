@@ -116,6 +116,7 @@ def topology_recognition(pixels, vertices_pixel):
 
 	edge_sections = trivial_sections + merged_sections
 	#edges_sections_pixels = {(u[0], u[len(u) - 1]) for u in all_sections}
+	print len(merged_sections)
 
 	return skel, classified_pixels
 
@@ -310,39 +311,45 @@ def traversal_subphase(classified_pixels, port_sections, crossing_pixels_in_port
 				continue
 
 			section = info_section[0]
-
-			crossing_section_direction = get_crossing_section_direction(classified_pixels, crossing_pixel, last_gradients[section[0]], section)
-
+			start_pixel = crossing_pixel
+			
 			flag_found_section = False
-			if len(crossing_section_direction) > 1:
-				flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section_direction, merged_sections)
+			iteration = 0
 
-			if not flag_found_section:
-				#next is an edge pixel
-				next = crossing_section_direction[-1]
+			while not flag_found_section:
 
-				_section, _last_gradients, next = get_basic_section(next, classified_pixels, crossing_pixel)
-				_section.append(next)
-				crossing_section_direction.extend(_section[1:])
+				crossing_section_direction = get_crossing_section_direction(classified_pixels, start_pixel, last_gradients[section[0]], section)
 
-				#print ">> crossing_pixel: ", crossing_pixel
-				#print ">> Next: ", next
-				#print ">> Section: ", _section
+				print crossing_pixel, start_pixel, classified_pixels[start_pixel[0], start_pixel[1]], crossing_section_direction[-1], classified_pixels[crossing_section_direction[-1][0], crossing_section_direction[-1][1]]
 
-				_crossing_section_direction = get_crossing_section_direction(classified_pixels, _section[-1], last_gradients[section[0]], _section)
-				crossing_section = crossing_section_direction + _crossing_section_direction
+				if len(crossing_section_direction) > 1:
+					flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section_direction, merged_sections)
 
+				if not flag_found_section:
+					#next is an edge pixel
+					next = crossing_section_direction[-1]
 
-				#back = crossing_section[-2]
-				#key_back = (back[0], back[1])
-				#print classified_pixels[key_back]
+					_section, _last_gradients, next = get_basic_section(next, classified_pixels, start_pixel)
+					crossing_section_direction.extend(_section[1:])
 
-	
-				flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section, merged_sections)
+					_crossing_section_direction = get_crossing_section_direction(classified_pixels, _section[-1], last_gradients[section[0]], _section)
+					crossing_section = crossing_section_direction + _crossing_section_direction
 
-				#unnecessary
-				_last_gradients.clear()
-				del _last_gradients
+		
+					flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section, merged_sections)
+
+					if not flag_found_section:
+						#start pixel is a crossing pixel
+						start_pixel = crossing_section[-2]
+						section = section + crossing_section
+
+					if iteration == 1:
+						_last_gradients.clear()
+						del _last_gradients
+					else:
+						last_gradients[section[0]].extend(_last_gradients)
+
+				iteration += 1
 
 	return merged_sections
 

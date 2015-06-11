@@ -16,6 +16,11 @@ class Circular_list(list):
 		self._index = (self._index + 1) % self._M
 
 
+	def extend(self, l):
+		for x in l:
+			self.insert(x)
+			
+
 	def get_list(self):
 		return self._l
 	
