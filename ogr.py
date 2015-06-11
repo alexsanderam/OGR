@@ -320,16 +320,18 @@ def traversal_subphase(classified_pixels, crossing_pixels_in_port_sections, last
 
 				crossing_section_direction = get_crossing_section_direction(classified_pixels, start_pixel, last_gradients[section[0]], section)
 
-				if len(crossing_section_direction) > 1:
-					flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section_direction, merged_sections)
-
-					#start_back is a crossing pixel
-					start_back = crossing_section_direction[-2]
-				else:
-					start_back = start_pixel
+				flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section_direction, merged_sections)
 
 
 				if not flag_found_section:
+
+					if len(crossing_section_direction) > 1:
+						#start_back is a crossing pixel
+						start_back = crossing_section_direction[-2]
+					else:
+						start_back = start_pixel
+
+
 					#next is an edge pixel
 					next = crossing_section_direction[-1]
 
@@ -346,11 +348,11 @@ def traversal_subphase(classified_pixels, crossing_pixels_in_port_sections, last
 						start_pixel = crossing_section[-2]
 						section = section + crossing_section
 
-					if iteration == 1:
-						_last_gradients.clear()
-						del _last_gradients
-					else:
-						last_gradients[section[0]].extend(_last_gradients)
+					#if iteration == 1:
+					#	_last_gradients.clear()
+					#	del _last_gradients
+					#else:
+					last_gradients[section[0]].extend(_last_gradients)
 
 				iteration += 1
 
@@ -359,9 +361,16 @@ def traversal_subphase(classified_pixels, crossing_pixels_in_port_sections, last
 
 def merge_sections(crossing_pixels_in_port_sections, section, crossing_section, merged_sections):
 
-	#back is a crossing pixel
-	back = crossing_section[-2]
+
+	if len(crossing_section) > 1:
+		#back is a crossing pixel
+		back = crossing_section[-2]
+	else:
+		back = section[-1]
+
+
 	key_back = (back[0], back[1])
+
 
 	#next is an edge pixel
 	next = crossing_section[-1]
@@ -379,7 +388,7 @@ def merge_sections(crossing_pixels_in_port_sections, section, crossing_section, 
 				#mark back (crossing pixel) as already visited
 				info_section[1] = 1
 
-				#print ((section[0][0], section[0][1]), (crossing_section[0][0], crossing_section[0][1]), (crossing_section[-1][0], crossing_section[-1][1]), (_section[::-1][-1][0], _section[::-1][-1][1])), next
+				print ((section[0][0], section[0][1]), (crossing_section[0][0], crossing_section[0][1]), (crossing_section[-1][0], crossing_section[-1][1]), (_section[::-1][-1][0], _section[::-1][-1][1])), next
 
 				return True
 
@@ -535,7 +544,7 @@ def get_gradient(classified_pixels, back, current, grads, excluded_grad=None):
 	return min_grad
 
 
-def weighted_euclidean_distance(grad1, grad2, alpha=1, betha=4):
+def weighted_euclidean_distance(grad1, grad2, alpha=4, betha=1):
 	[x, y] = [grad1[0] - grad2[0], grad1[1] - grad2[1]]
 	d = np.sqrt((alpha* (x**2)) + (betha * (y**2)))
 	return d
