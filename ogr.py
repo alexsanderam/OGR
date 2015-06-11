@@ -320,23 +320,32 @@ def traversal_subphase(classified_pixels, port_sections, crossing_pixels_in_port
 
 				crossing_section_direction = get_crossing_section_direction(classified_pixels, start_pixel, last_gradients[section[0]], section)
 
-				print crossing_pixel, start_pixel, classified_pixels[start_pixel[0], start_pixel[1]], crossing_section_direction[-1], classified_pixels[crossing_section_direction[-1][0], crossing_section_direction[-1][1]]
+				#print crossing_pixel, start_pixel, classified_pixels[start_pixel[0], start_pixel[1]], crossing_section_direction[-1], classified_pixels[crossing_section_direction[-1][0], crossing_section_direction[-1][1]]
 
 				if len(crossing_section_direction) > 1:
 					flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section_direction, merged_sections)
+					#if (flag_found_section):
+					#	print crossing_section_direction
+					#start_back is a crossing pixel
+					start_back = crossing_section_direction[-2]
+				else:
+					start_back = start_pixel
 
 				if not flag_found_section:
 					#next is an edge pixel
 					next = crossing_section_direction[-1]
 
-					_section, _last_gradients, next = get_basic_section(next, classified_pixels, start_pixel)
+					#x = next
+					_section, _last_gradients, next = get_basic_section(next, classified_pixels, start_back)
 					crossing_section_direction.extend(_section[1:])
 
 					_crossing_section_direction = get_crossing_section_direction(classified_pixels, _section[-1], last_gradients[section[0]], _section)
 					crossing_section = crossing_section_direction + _crossing_section_direction
 
-		
 					flag_found_section = merge_sections(crossing_pixels_in_port_sections, section, crossing_section, merged_sections)
+					#if (flag_found_section):
+					#	print x, start_pixel, "_section: ", _section, "\n", crossing_section_direction, "\n", _crossing_section_direction, "\n", crossing_section, "\n\n"
+
 
 					if not flag_found_section:
 						#start pixel is a crossing pixel
@@ -369,23 +378,22 @@ def merge_sections(crossing_pixels_in_port_sections, section, crossing_section, 
 	for info_section in crossing_pixels_in_port_sections[key_back]:
 		_section = info_section[0]
 
+		# if _section[0][0] == section[0][0] and _section[0][1] == section[0][1]:
+		# 	continue
+
+
 		if next[0] == _section[-2][0] and next[1] == _section[-2][1]:
 				
-				#port_pixel_1 = section[0]
-				#port_pixel_2 = _section[0]
-
 				merged_sections.append(section + crossing_section + _section[::-1][1:])
-				#edges_section[port_pixel_1, port_pixel_2] = section + crossing_section + _section[::-1][1:]
-				#print section[-1], crossing_section[0], crossing_section[-1], _section[::-1][1:][1]
 
 				#mark back (crossing pixel) as already visited
 				info_section[1] = 1
 
-				#print edges_section[(port_pixel_1, port_pixel_2)]
+				print ((section[0][0], section[0][1]), (_section[-1][0], _section[-1][1])), next
+
 				return True
 
 	return False
-
 
 
 def get_crossing_section_direction(classified_pixels, crossing_pixel, last_gradients, section):
@@ -412,9 +420,11 @@ def get_crossing_section_direction(classified_pixels, crossing_pixel, last_gradi
 		aux_value = 0
 		i = 0
 
-		if iterations > 3:
+		if iterations == 3:
 			list_loop_grads = loop_grads.get_list()
-			excluded_grad = list_loop_grads[2]
+			excluded_grad = list_loop_grads[1]
+			crossing_section_direction[:] = []
+			iterations = 0
 
 
 		while aux_value < 2 and i < len(grads): #blank pixel or miscellaneous and i < len
@@ -499,8 +509,8 @@ def get_max_neighbor(classified_pixels, x, y, back=None):
 
 	for i in range(0, 3):
 		for j in range(0, 3):
-			if (back == None or (x+i-1 != back[0] or y+j-1 != back[1])) and (i != 1 or j != 1) and (classified_pixels[x+i-1, y+j-1] > neighbor_value):
-				neighbor = (x+i-1, y+j-1)
+			if (back is None or (x+i-1 != back[0] or y+j-1 != back[1])) and (i != 1 or j != 1) and (classified_pixels[x+i-1, y+j-1] > neighbor_value):
+				neighbor = np.array([x+i-1, y+j-1])
 				neighbor_value = classified_pixels[x+i-1, y+j-1]
 
 	return neighbor, neighbor_value
