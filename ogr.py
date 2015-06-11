@@ -764,15 +764,14 @@ def convert_to_topological_graph(pixels, path = None, name=None):
 	#====================================================================================
 	#Visualization
 
-	colors=range(len(dict_edge_sections))
-	nx.draw(G, pos=vertices_coordinates, node_color='#A0CBE2',edge_color=colors, width=4, edge_cmap=plt.cm.winter,with_labels=False)
-	plt.draw()
-	plt.show()
-
-
 	if not (path is None or name is None):
 
+		colors=range(len(dict_edge_sections))
+		nx.draw(G, pos=vertices_coordinates, node_color='#A0CBE2',edge_color=colors, width=4, edge_cmap=plt.cm.winter,with_labels=False)
+		plt.draw()
 		plt.savefig(path + name + "_result.png")
+		plt.show()
+
 
 		util.save_image_from_binary_array(preprocessing_pixels, path + name + "_preprocessing.png")
 
