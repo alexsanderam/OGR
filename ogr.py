@@ -566,10 +566,11 @@ def distance_heuristic_grads(common_grads, possible_grads, grad):
 			amount_non_zero_y += _grad[1]
 
 	total_non_zeros = amount_non_zero_x + amount_non_zero_y
-	
 
 	alpha = (total_non_zeros - amount_non_zero_y)
 	betha = (total_non_zeros - amount_non_zero_x)
+
+	#print alpha, betha
 
 	d = weighted_euclidean_distance(average_common_grad, grad, alpha, betha)
 	#d = weighted_euclidean_distance(most_common_grad, grad, alpha, betha)
@@ -676,7 +677,7 @@ def save_topological_graph(G, path):
 
 def convert_to_topological_graph(pixels, path = None, name=None):
 
-	pixels = np.rot90(pixels, 3)
+	#pixels = np.rot90(pixels, 3)
 	
 	start_wall_time = time()
 
@@ -764,7 +765,7 @@ def convert_to_topological_graph(pixels, path = None, name=None):
 
 	if not (path is None or name is None):
 
-		colors=range(len(dict_edge_sections))
+		colors=range(nx.number_of_edges(G))
 		nx.draw(G, pos=vertices_coordinates, node_color='#A0CBE2',edge_color=colors, width=4, edge_cmap=plt.cm.winter,with_labels=False)
 		plt.draw()
 		plt.savefig(path + name + "_result.png")

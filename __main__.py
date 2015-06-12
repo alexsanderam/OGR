@@ -11,6 +11,7 @@ def __main__(argv):
 	
 	input_path = None
 	output_path = None
+	name = None
 
 	try:
 		opts, args = getopt.getopt(argv, "i:o:", ["input=", "output="])
@@ -31,10 +32,10 @@ def __main__(argv):
 
 
 	#get name
-	splited = input_path.split('/')
-	name = splited[len(splited) - 1]
-	name = name.split('.')[0]
-	
+	if not output_path is None:
+		splited = input_path.split('/')
+		name = splited[len(splited) - 1]
+		name = name.split('.')[0]
 
 	pixels = ogr.read_optical_graph(input_path)
 	ogr.convert_to_topological_graph(pixels, output_path, name)
