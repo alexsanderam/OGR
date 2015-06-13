@@ -14,6 +14,8 @@ from collections import Counter
 import networkx as nx
 import matplotlib.pyplot as plt
 
+import teste
+
 
 def preprocessing(pixels):
 	print "-------------Preprocessing phase--------------"
@@ -102,6 +104,9 @@ def topology_recognition(pixels, vertices_pixel):
 
 	print "Skelonization image."
 	skel = morphology.zang_and_suen_binary_thinning(pixels)
+	#skel = teste.binary_skeletonization(pixels)
+	#skel = teste.binary_medial_axis(pixels)
+	#skel = morphology.binary_skeletonization_by_thinning(pixels)
 
 	print "Edge classification."
 	classified_pixels, port_pixels = edge_classification(skel, vertices_pixel)
@@ -149,10 +154,97 @@ def edge_classification(skel, vertices_pixel):
 	return classified_pixels, port_pixels#, crossing_pixels
 
 
+# def edge_classification(skel, vertices_pixel):
+# 	height, width = skel.shape
+
+# 	classified_pixels = np.zeros((skel.shape))
+# 	port_pixels = []
+# 	crossing_pixels = []
+
+# 	for x in range(1, height-1):
+# 		for y in range(1, width-1):
+
+# 			if skel[x,y] == 1 and vertices_pixel[x,y] == 0:
+
+# 				#eight neighborhood of pixel (x, y)
+# 				skel_neighborhood = get_four_neighborhood(skel, x, y)
+
+# 				#n0 is the number of object pixels in 8-neighborhood of (x,y)
+# 				n0 = sum(skel_neighborhood.values())
+
+# 				if n0 < 2:
+# 					classified_pixels[x,y] = 1 #miscellaneous pixels
+# 				elif n0 == 2 and n_vertex_pixel_in_neighborhood(skel, skel_neighborhood, vertices_pixel) > 0:
+# 					classified_pixels[x,y] = 4 #port pixels
+# 					port_pixels.append((x, y))
+# 				elif n0 == 2:
+# 					classified_pixels[x,y] = 2 #edge pixels
+# 				elif n0 > 2:
+# 					classified_pixels[x,y] = 3 #crossing pixels
+# 					crossing_pixels.append((x, y))
+			
+
+# 	return classified_pixels, port_pixels, crossing_pixels
+
+
+
+# def get_four_neighborhood(pixels, x, y):
+# 	neighborhood = np.array([pixels[x-1, y], pixels[x+1, y], pixels[x, y-1], pixels[x, y+1]])
+# 	return neighborhood
+
+
+
+# def get_diagonal_neighborhood(pixels, x, y):
+# 	neighborhood = np.array([pixels[x-1, y-1], pixels[x+1, y-1], pixels[x-1, y+1], pixels[x+1, y+1]])
+# 	return neighborhood
+
+
 def get_eight_neighborhood(pixels, x, y):
 	neighborhood = np.array([pixels[x-1, y], pixels[x+1, y], pixels[x, y-1], pixels[x, y+1], pixels[x+1, y+1], pixels[x+1, y-1], pixels[x-1, y+1], pixels[x-1, y-1]])
 	return neighborhood
 
+
+# def get_four_neighborhood(pixels, x, y):
+# 	neighborhood = {}
+# 	neighborhood[x-1, y] = pixels[x-1, y]
+# 	neighborhood[x+1, y] = pixels[x+1, y]
+# 	neighborhood[x, y-1] = pixels[x, y-1]
+# 	neighborhood[x, y+1] = pixels[x, y+1]
+
+# 	return neighborhood
+
+
+# def get_diagonal_neighborhood(pixels, x, y):
+# 	neighborhood = {}
+# 	neighborhood[x-1, y-1] = pixels[x-1, y-1]
+# 	neighborhood[x+1, y-1] = pixels[x+1, y-1]
+# 	neighborhood[x-1, y+1] = pixels[x-1, y+1]
+# 	neighborhood[x+1, y+1] = pixels[x+1, y+1]
+
+# 	return neighborhood
+
+
+# def get_eight_neighborhood(pixels, x, y):
+# 	neighborhood = {}
+# 	neighborhood[x-1, y] = pixels[x-1, y]
+# 	neighborhood[x+1, y] = pixels[x+1, y]
+# 	neighborhood[x, y-1] = pixels[x, y-1]
+# 	neighborhood[x, y+1] = pixels[x, y+1]
+# 	neighborhood[x+1, y+1] = pixels[x+1, y+1]
+# 	neighborhood[x+1, y-1] = pixels[x+1, y-1]
+# 	neighborhood[x-1, y+1] = pixels[x-1, y+1]
+# 	neighborhood[x-1, y-1] = pixels[x-1, y-1]
+
+# 	return neighborhood
+
+
+
+# def n_vertex_pixel_in_neighborhood(skel, neighborhood, vertices):
+# 	n = 0
+# 	for pos in neighborhood:
+# 		if skel[pos] == 1 and vertices[pos] == 1:
+# 			n += 1
+# 	return n
 
 
 def edge_sections_identify(classified_pixels, port_pixels):

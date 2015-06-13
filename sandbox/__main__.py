@@ -4,6 +4,7 @@ import sys
 
 import numpy as np
 
+import teste
 import ogr
 
 def __main__(argv):
@@ -38,6 +39,11 @@ def __main__(argv):
 
 	pixels = ogr.read_optical_graph(input_path)
 	ogr.convert_to_topological_graph(pixels, output_path, name)
+
+	#if output_path != '':
+	#	util.save_image(output_image, output_path)
+	#
+	#output_image.show()		
 	
 
 if __name__ == "__main__":
