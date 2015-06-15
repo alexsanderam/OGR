@@ -101,7 +101,7 @@ def topology_recognition(pixels, vertices_pixel):
 	print "-------------Topology recognition phase--------------"
 
 	print "Skelonization image."
-	skel = morphology.zang_and_suen_binary_thinning(pixels)
+	skel = morphology.zhang_and_suen_binary_thinning(pixels)
 
 	print "Edge classification."
 	classified_pixels, port_pixels = edge_classification(skel, vertices_pixel)
@@ -672,12 +672,15 @@ def convert_to_topological_graph(pixels, path = None, name=None):
 	#Visualization
 
 	if not (path is None or name is None):
+		pos = {}#vertices_coordinates
+		for x in vertices_coordinates:
+			pos[x] = (vertices_coordinates[x][1], pixels.shape[0] - vertices_coordinates[x][0])
 
 		colors=range(nx.number_of_edges(G))
-		nx.draw(G, pos=vertices_coordinates, node_color='#A0CBE2',edge_color=colors, width=4, edge_cmap=plt.cm.winter,with_labels=False)
+		nx.draw(G, pos=pos, node_color='#A0CBE2',edge_color=colors, width=4, edge_cmap=plt.cm.winter,with_labels=False)
 		plt.draw()
 		plt.savefig(path + name + "_result.png")
-		plt.show()
+		#plt.show()
 
 
 		util.save_image_from_binary_array(preprocessing_pixels, path + name + "_preprocessing.png")
