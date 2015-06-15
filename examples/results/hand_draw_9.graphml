@@ -1,0 +1,39 @@
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="x" attr.type="int" for="node" id="d1" />
+  <key attr.name="y" attr.type="int" for="node" id="d0" />
+  <graph edgedefault="undirected">
+    <node id="1">
+      <data key="d0">107</data>
+      <data key="d1">40</data>
+    </node>
+    <node id="2">
+      <data key="d0">196</data>
+      <data key="d1">47</data>
+    </node>
+    <node id="3">
+      <data key="d0">41</data>
+      <data key="d1">97</data>
+    </node>
+    <node id="4">
+      <data key="d0">242</data>
+      <data key="d1">137</data>
+    </node>
+    <node id="5">
+      <data key="d0">98</data>
+      <data key="d1">208</data>
+    </node>
+    <node id="6">
+      <data key="d0">167</data>
+      <data key="d1">221</data>
+    </node>
+    <edge source="1" target="2" />
+    <edge source="1" target="3" />
+    <edge source="1" target="5" />
+    <edge source="2" target="4" />
+    <edge source="2" target="5" />
+    <edge source="3" target="5" />
+    <edge source="4" target="5" />
+    <edge source="4" target="6" />
+    <edge source="5" target="6" />
+  </graph>
+</graphml>
