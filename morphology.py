@@ -103,9 +103,9 @@ def binary_closing(A, B=None, k=1):
 
 """
 Input:  Set of binary pixels A.
-Output: Result of skeletonization of A by Zang and Suen Algorithm, and applying an m-connectivity algorithm.
+Output: Result of skeletonization of A by Zhang and Suen Algorithm, and applying an m-connectivity algorithm.
 """
-def zang_and_suen_binary_thinning(A):
+def zhang_and_suen_binary_thinning(A):
 	height = A.shape[0]
 	width = A.shape[1]
 

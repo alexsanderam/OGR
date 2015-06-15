@@ -36,6 +36,10 @@ def __main__(argv):
 		name = splited[len(splited) - 1]
 		name = name.split('.')[0]
 
+		if not os.path.exists(output_path):
+			os.mkdir(output_path)
+
+
 	pixels = ogr.read_optical_graph(input_path)
 	ogr.convert_to_topological_graph(pixels, output_path, name)
 	
